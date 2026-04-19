@@ -1,0 +1,58 @@
+﻿@model QuizApp.Models.Questions
+
+@{
+    ViewData["Title"] = "Quiz Session";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white p-4">
+                    <h3 class="mb-0">Question</h3>
+                </div>
+                <div class="card-body p-4">
+                    <h4 class="mb-4 fw-bold">@Model.Text</h4>
+
+                    <form asp-action="Play" method="post" id="quizForm">
+                        <input type="hidden" name="questionId" value="@Model.QuestionId" />
+                        <input type="hidden" name="correctAnswers" value="@(ViewBag.CorrectAnswers ?? 0)" />
+                        <input type="hidden" name="totalProcessed" value="@(ViewBag.TotalProcessed ?? 0)" />
+
+                        <div class="list-group mb-4">
+                            @foreach (var answer in Model.Answers)
+                            {
+                                <label class="list-group-item list-group-item-action d-flex align-items-center py-3 border-2 rounded-3 mb-2">
+                                    <input class="form-check-input me-3" type="radio" name="selectedAnswerId" value="@answer.Id" required>
+                                    <span class="fs-5">@answer.AnswerText</span>
+                                </label>
+                            }
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center border-top pt-4">
+                            <span id="timer-text" class="text-danger fw-bold fs-5">
+                                <i class="far fa-clock"></i> Time Limit: 10 seconds
+                            </span>
+                            <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm fw-bold">
+                                Next Question
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let timeLeft = 10;
+        const timerElement = document.getElementById('timer-text');
+        const quizForm = document.getElementById('quizForm');
+        const countdown = setInterval(() => {
+            timeLeft--;
+            if (timerElement) timerElement.innerHTML = `<i class="far fa-clock"></i> Time Limit: ${timeLeft} seconds`;
+            if (timeLeft <= 0) { clearInterval(countdown); quizForm.submit(); }
+        }, 1000);
+    </script>
+}

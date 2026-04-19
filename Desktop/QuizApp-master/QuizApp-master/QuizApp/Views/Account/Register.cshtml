@@ -1,0 +1,30 @@
+﻿@model QuizApp.Models.Users
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Yeni Kayıt</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Register" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Kullanıcı Adı</label>
+                            <input asp-for="Username" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input asp-for="Email" type="email" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Şifre</label>
+                            <input asp-for="Password" type="password" class="form-control" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Kayıt Ol</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

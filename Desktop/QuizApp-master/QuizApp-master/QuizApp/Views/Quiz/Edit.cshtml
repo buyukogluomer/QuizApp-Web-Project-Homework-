@@ -1,0 +1,44 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model QuizApp.Models.Questions
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Edit Question & Options</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" name="QuestionId" value="@Model.QuestionId" />
+                <input type="hidden" name="QuizId" value="@Model.QuizId" />
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2">Question Text</label>
+                    <input type="text" name="Text" class="form-control form-control-lg" value="@Model.Text" required />
+                </div>
+
+                <label class="fw-bold mb-2">Options (Select the correct one)</label>
+                
+                @{ var answers = Model.Answers.ToList(); }
+
+                @for (int i = 0; i < answers.Count; i++)
+                {
+                    <div class="input-group mb-3 p-2 border rounded border-light bg-light">
+                        <div class="input-group-text bg-white border-0">
+                            <input class="form-check-input mt-0" type="radio" name="correctAnswerIndex" value="@i" @(answers[i].IsCorrect ? "checked" : "") required>
+                        </div>
+                        <input type="text" name="options" class="form-control border-0 bg-transparent" value="@answers[i].AnswerText" required>
+                        
+                        <input type="hidden" name="answerIds" value="@answers[i].Id" />
+                    </div>
+                }
+
+                <div class="d-flex justify-content-between mt-4">
+                    <p class="text-danger fw-bold">Time Limit: @Model.TimeLimitSecond s</p>
+                    <button type="submit" class="btn btn-success btn-lg px-5">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

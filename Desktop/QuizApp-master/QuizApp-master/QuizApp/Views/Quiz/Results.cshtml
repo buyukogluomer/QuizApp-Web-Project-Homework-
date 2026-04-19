@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Quiz Result";
+}
+
+<div class="container mt-5">
+    <div class="card shadow border-0 mx-auto text-center p-5" style="max-width: 600px;">
+        <div class="mb-4">
+            <i class="bi bi-check-circle text-success" style="font-size: 5rem;"></i>
+        </div>
+        <h1 class="display-4 fw-bold text-primary">Tebrikler!</h1>
+        <p class="lead text-muted">Quiz başarıyla tamamlandı.</p>
+
+        <div class="alert alert-info py-4 my-4">
+            <h2 class="mb-0">Toplam Puanın: <strong>@ViewBag.Score</strong></h2>
+        </div>
+
+        <div class="d-grid gap-2">
+            <a asp-action="Index" class="btn btn-primary btn-lg shadow-sm">
+                Yeni Bir Quize Başla
+            </a>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                Ana Sayfaya Dön
+            </a>
+        </div>
+    </div>
+</div>
