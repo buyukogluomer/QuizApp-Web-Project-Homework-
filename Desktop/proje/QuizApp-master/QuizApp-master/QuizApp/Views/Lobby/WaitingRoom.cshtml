@@ -1,0 +1,153 @@
+@model LobbyWaitingRoomViewModel
+
+@{
+    ViewData["Title"] = "Waiting Room";
+}
+
+<div class="container-fluid bg-dark text-white" style="min-height: 100vh; padding-top: 50px;">
+    <div class="text-center mb-5">
+        <p class="text-uppercase text-secondary mb-2">Host Ekrani</p>
+        <h1 class="display-5 fw-bold">@Model.QuizTitle</h1>
+        <p class="mb-3">Oyuncular <strong>/Lobby/Join</strong> sayfasindan bu PIN ile katilabilir.</p>
+        <div class="display-1 fw-bolder mt-2" style="font-size: 6rem; letter-spacing: 15px;">
+            @Model.PinCode
+        </div>
+    </div>
+
+    <div class="container bg-white text-dark rounded-4 p-5 shadow-lg" style="min-height: 50vh;">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+            <div>
+                <h2 class="fw-bold mb-1"><span id="playerCount">@Model.Players.Count</span> Oyuncu Hazir</h2>
+                <div class="text-muted">Oyunu baslatmak icin en az 1 oyuncu lobiye katilmali.</div>
+            </div>
+            <button id="btnStart" class="btn btn-success btn-lg px-5 fw-bold shadow" @(Model.Players.Count == 0 ? "disabled" : null)>Oyunu Baslat</button>
+        </div>
+
+        <hr>
+
+        <div class="mb-3">
+            <div class="fw-semibold mb-2">Baglanan Oyuncular</div>
+            <div id="playerList" class="d-flex flex-wrap gap-3">
+                @foreach (var player in Model.Players)
+                {
+                    <div class="p-3 bg-primary text-white fw-bold rounded-pill shadow-sm" style="min-width: 120px;">@player</div>
+                }
+            </div>
+            <p id="emptyState" class="text-muted mt-3 @(Model.Players.Count == 0 ? "" : "d-none")">Henuz oyuncu baglanmadi.</p>
+        </div>
+
+        <div class="mt-5">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    <div class="fw-semibold">Lobi Liderlik Siralamasi</div>
+                    <div class="text-muted small">Bu PIN ile giren oyuncular puana gore listelenir.</div>
+                </div>
+                <span class="badge bg-dark">Toplam: <span id="rankingCount">@Model.Rankings.Count</span></span>
+            </div>
+            <div id="rankingList" class="list-group">
+                @foreach (var entry in Model.Rankings)
+                {
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="badge @(entry.Rank == 1 ? "bg-warning text-dark" : entry.Rank == 2 ? "bg-secondary" : "bg-dark")">@entry.Rank.</span>
+                            <span class="fw-bold">@entry.PlayerName</span>
+                        </div>
+                        <span class="fw-semibold">@entry.Score puan</span>
+                    </div>
+                }
+            </div>
+            <p id="rankingEmptyState" class="text-muted mt-3 @(Model.Rankings.Count == 0 ? "" : "d-none")">Liderlik tablosu oyuncular geldikce olusacak.</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+    <script>
+        const pinCode = "@Model.PinCode";
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/quizHub")
+            .withAutomaticReconnect()
+            .build();
+
+        function renderPlayers(players) {
+            const playerList = document.getElementById("playerList");
+            const emptyState = document.getElementById("emptyState");
+            const countElement = document.getElementById("playerCount");
+            const startButton = document.getElementById("btnStart");
+
+            playerList.innerHTML = "";
+            countElement.innerText = players.length;
+            startButton.disabled = players.length === 0;
+            emptyState.classList.toggle("d-none", players.length > 0);
+
+            players.forEach(playerName => {
+                const playerDiv = document.createElement("div");
+                playerDiv.className = "p-3 bg-primary text-white fw-bold rounded-pill shadow-sm";
+                playerDiv.style.minWidth = "120px";
+                playerDiv.innerText = playerName;
+                playerList.appendChild(playerDiv);
+            });
+        }
+
+        function renderRankings(rankings) {
+            const rankingList = document.getElementById("rankingList");
+            const rankingCount = document.getElementById("rankingCount");
+            const rankingEmptyState = document.getElementById("rankingEmptyState");
+
+            rankingList.innerHTML = "";
+            rankingCount.innerText = rankings.length;
+            rankingEmptyState.classList.toggle("d-none", rankings.length > 0);
+
+            rankings.forEach(entry => {
+                const item = document.createElement("div");
+                item.className = "list-group-item d-flex justify-content-between align-items-center";
+
+                const badgeClass = entry.rank === 1
+                    ? "bg-warning text-dark"
+                    : entry.rank === 2
+                        ? "bg-secondary"
+                        : "bg-dark";
+
+                item.innerHTML = `
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge ${badgeClass}">${entry.rank}.</span>
+                        <span class="fw-bold">${entry.playerName}</span>
+                    </div>
+                    <span class="fw-semibold">${entry.score} puan</span>`;
+
+                rankingList.appendChild(item);
+            });
+        }
+
+        connection.on("LobbyStateChanged", function (state) {
+            if (state.pin !== pinCode) {
+                return;
+            }
+
+            renderPlayers(state.players);
+            renderRankings(state.rankings ?? []);
+        });
+
+        connection.on("QuizStarted", function (startedQuizId, startedPin) {
+            if (startedPin === pinCode) {
+                window.location.href = `/Quiz/Play/${startedQuizId}?pin=${encodeURIComponent(pinCode)}&playerName=${encodeURIComponent("Host")}`;
+            }
+        });
+
+        document.getElementById("btnStart").addEventListener("click", async function () {
+            this.disabled = true;
+
+            try {
+                await connection.invoke("StartQuiz", pinCode);
+            } catch (error) {
+                this.disabled = false;
+                alert(error.toString().replace("Error: ", ""));
+            }
+        });
+
+        connection.start()
+            .then(() => connection.invoke("JoinLobby", pinCode, "Host", true))
+            .catch(error => alert(error.toString().replace("Error: ", "")));
+    </script>
+}

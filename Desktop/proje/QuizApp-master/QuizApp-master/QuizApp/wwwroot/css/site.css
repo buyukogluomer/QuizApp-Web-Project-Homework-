@@ -1,0 +1,256 @@
+:root {
+  --bg: #081120;
+  --bg-soft: #0f1b31;
+  --panel: rgba(14, 25, 45, 0.88);
+  --panel-strong: #13213d;
+  --line: rgba(86, 134, 214, 0.22);
+  --text: #dce9ff;
+  --muted: #8ea7d1;
+  --blue: #4ea1ff;
+  --blue-strong: #2e7de1;
+  --blue-glow: rgba(78, 161, 255, 0.3);
+  --success: #31d0aa;
+}
+
+html {
+  font-size: 14px;
+  position: relative;
+  min-height: 100%;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+  margin: 0;
+  margin-bottom: 60px;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(78, 161, 255, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(46, 125, 225, 0.18), transparent 24%),
+    linear-gradient(180deg, #0a1325 0%, #081120 45%, #060d19 100%);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+a {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #82bdff;
+}
+
+.container,
+.container-fluid {
+  position: relative;
+  z-index: 1;
+}
+
+.card,
+.alert,
+.list-group-item,
+.modal-content,
+.dropdown-menu {
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(10px);
+}
+
+.card-title,
+.card h1,
+.card h2,
+.card h3,
+.card h4,
+.card h5,
+.display-1,
+.display-4,
+.display-5,
+.display-6,
+.text-primary {
+  color: var(--blue) !important;
+}
+
+.text-muted,
+.lead,
+p,
+label,
+span,
+small,
+.form-text,
+.text-secondary {
+  color: var(--muted) !important;
+}
+
+.navbar {
+  background: rgba(6, 13, 25, 0.88) !important;
+  border-bottom: 1px solid var(--line) !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(14px);
+}
+
+.navbar-brand,
+.navbar .nav-link,
+.navbar .btn-link {
+  color: var(--text) !important;
+}
+
+.quizapp-brand {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0;
+}
+
+.quizapp-brand-logo {
+  display: block;
+  height: 50px;
+  width: auto;
+  filter: drop-shadow(0 8px 18px rgba(55, 199, 233, 0.16));
+}
+
+.home-logo-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.home-hero-logo {
+  width: min(420px, 82vw);
+  height: auto;
+  filter:
+    drop-shadow(0 20px 32px rgba(7, 20, 42, 0.52))
+    drop-shadow(0 0 22px rgba(80, 184, 255, 0.18));
+}
+
+.navbar-brand:hover,
+.navbar .nav-link:hover {
+  color: var(--blue) !important;
+}
+
+.navbar-toggler {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.navbar-toggler:focus,
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem rgba(8, 17, 32, 0.9), 0 0 0 0.25rem var(--blue-glow);
+}
+
+.btn-primary,
+.btn-success,
+.btn-outline-primary:hover,
+.btn-outline-success:hover {
+  color: #f8fbff;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-strong) 100%);
+  border-color: transparent;
+  box-shadow: 0 12px 30px rgba(46, 125, 225, 0.3);
+}
+
+.btn-primary:hover,
+.btn-success:hover {
+  background: linear-gradient(135deg, #69b1ff 0%, #3b8ff0 100%);
+}
+
+.btn-outline-primary,
+.btn-outline-success,
+.btn-outline-secondary,
+.btn-warning,
+.btn-danger,
+.btn-info {
+  color: var(--text);
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-success:hover,
+.btn-outline-secondary:hover,
+.btn-warning:hover,
+.btn-danger:hover,
+.btn-info:hover {
+  color: #f8fbff;
+  border-color: transparent;
+}
+
+.form-control,
+.form-select,
+.form-control:disabled,
+.form-control[readonly] {
+  color: var(--text);
+  background: rgba(8, 17, 32, 0.72);
+  border: 1px solid var(--line);
+}
+
+.form-control::placeholder {
+  color: #6f89b2;
+}
+
+.list-group-item {
+  margin-bottom: 0.5rem;
+}
+
+.alert-info,
+.alert-secondary,
+.alert-success,
+.alert-warning {
+  border-color: var(--line);
+}
+
+.bg-white,
+.bg-light {
+  background: var(--panel) !important;
+}
+
+.bg-dark {
+  background: transparent !important;
+}
+
+.text-dark,
+.alert .text-dark {
+  color: var(--text) !important;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+  color: var(--muted) !important;
+  background: rgba(6, 13, 25, 0.82) !important;
+  border-top: 1px solid var(--line) !important;
+}
+
+.box-shadow {
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+}
+
+@media (max-width: 767.98px) {
+  .quizapp-brand-logo {
+    height: 42px;
+  }
+
+  .home-hero-logo {
+    width: min(320px, 84vw);
+  }
+}
+
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+  color: var(--muted);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}

@@ -1,0 +1,125 @@
+@model QuizResultsViewModel
+
+@{
+    ViewData["Title"] = "Quiz Result";
+    var currentRank = Model.Rankings.FirstOrDefault(r => r.IsCurrentPlayer);
+    var participantCount = Model.Rankings.Count;
+    var shouldWaitForOthers = !string.IsNullOrWhiteSpace(Model.PinCode) && Model.TotalPlayers > 1 && !Model.AreAllPlayersFinished;
+}
+
+<div class="container mt-5">
+    <div class="card shadow border-0 mx-auto p-5" style="max-width: 850px;">
+        <div class="text-center mb-4">
+            <i class="bi bi-trophy-fill text-warning" style="font-size: 5rem;"></i>
+            <h1 class="display-4 fw-bold text-primary mt-3">Quiz Bitti</h1>
+            <p class="lead text-muted mb-0">Skor, hiz ve dogruluk bir arada hesaplandi.</p>
+        </div>
+
+        <div class="row g-3 my-4">
+            <div class="col-md-4">
+                <div class="alert alert-info h-100 mb-0 text-center">
+                    <div class="text-muted">Toplam Puan</div>
+                    <h2 class="mb-0">@Model.Score</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="alert alert-success h-100 mb-0 text-center">
+                    <div class="text-muted">Dogru Cevap</div>
+                    <h2 class="mb-0">@Model.CorrectAnswers / @Model.TotalQuestions</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="alert alert-secondary h-100 mb-0 text-center">
+                    <div class="text-muted">Basari Orani</div>
+                    <h2 class="mb-0">%@Model.SuccessRate</h2>
+                </div>
+            </div>
+        </div>
+
+        @if (shouldWaitForOthers)
+        {
+            <div class="alert alert-info text-center">
+                <strong>@Model.PlayerName</strong> quizi bitirdi. Diger oyuncular bekleniyor:
+                <strong>@Model.FinishedPlayers / @Model.TotalPlayers</strong>
+            </div>
+            <div class="text-center text-muted mb-3">
+                Herkes bitirince bu sayfada son siralama otomatik gosterilecek.
+            </div>
+        }
+        else if (currentRank != null)
+        {
+            <div class="alert alert-warning text-center">
+                <strong>@Model.PlayerName</strong> bu odada <strong>@currentRank.Rank.</strong> sirada.
+            </div>
+        }
+
+        @if (Model.Rankings.Any() && !shouldWaitForOthers)
+        {
+            <div class="mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div>
+                        <h3 class="mb-0">Katilan Tum Oyuncularin Siralamasi</h3>
+                        <div class="text-muted small">@participantCount oyuncu bu odada siralandi.</div>
+                    </div>
+                    <span class="badge bg-dark">PIN: @Model.PinCode</span>
+                </div>
+
+                <div class="list-group">
+                    @foreach (var entry in Model.Rankings)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center @(entry.IsCurrentPlayer ? "active" : "")">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="badge @(entry.Rank == 1 ? "bg-warning text-dark" : entry.Rank == 2 ? "bg-secondary" : "bg-dark")">
+                                    @entry.Rank.
+                                </span>
+                                <div>
+                                    <div class="fw-bold">@entry.PlayerName</div>
+                                    @if (!entry.HasFinished)
+                                    {
+                                        <div class="small">Henuz quizi bitirmedi</div>
+                                    }
+                                    else if (entry.Rank == 1)
+                                    {
+                                        <div class="small">Birinci oldu</div>
+                                    }
+                                    else if (entry.Rank == 2)
+                                    {
+                                        <div class="small">Ikinci oldu</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="small">@entry.Rank. sirada bitirdi</div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="fw-bold">@(entry.HasFinished ? $"{entry.Score} puan" : "Bekleniyor")</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="d-grid gap-2 mt-5">
+            <a asp-action="Index" class="btn btn-primary btn-lg shadow-sm">
+                Yeni Bir Quize Basla
+            </a>
+            <a asp-controller="Lobby" asp-action="Join" class="btn btn-outline-success">
+                PIN ile Oyuna Katil
+            </a>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                Ana Sayfaya Don
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (shouldWaitForOthers)
+{
+    @section Scripts {
+        <script>
+            setTimeout(function () {
+                window.location.reload();
+            }, 3000);
+        </script>
+    }
+}

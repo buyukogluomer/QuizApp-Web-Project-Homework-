@@ -1,0 +1,35 @@
+﻿<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow border-0">
+                <div class="card-header bg-transparent border-0 text-center">
+                    <img src="~/images/logo-ver2.svg" style="height: 60px;" alt="Logo" />
+                    <h3 class="text-white mt-2">HOŞGELDİNİZ</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Login" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Email Address</label>
+                            <input name="email" type="email" class="form-control" placeholder="example@test.com" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Password</label>
+                            <input name="password" type="password" class="form-control" placeholder="******" required />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Login</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-center py-3">
+                    <span class="text-muted">Don't have an account?</span> 
+                    <a asp-action="Register" class="text-success fw-bold text-decoration-none">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

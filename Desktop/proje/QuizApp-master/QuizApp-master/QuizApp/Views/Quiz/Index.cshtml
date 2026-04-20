@@ -1,0 +1,51 @@
+﻿@model IEnumerable<QuizApp.Models.Quizzes>
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary">Available Quizzes</h1>
+        <div class="d-flex justify-content-center gap-3 flex-wrap mb-4">
+            <a asp-action="Create" class="btn btn-outline-primary">
+                <i class="bi bi-plus-circle"></i> Create New Quiz
+            </a>
+            <a asp-controller="Lobby" asp-action="Join" class="btn btn-outline-success">
+                <i class="bi bi-people-fill"></i> Join With PIN
+            </a>
+        </div>
+        <p class="lead text-muted">Select a category and test your knowledge!</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning">Veritabanında hiç quiz bulunamadı!</div>
+    }
+
+    <div class="row g-4 justify-content-center">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-5">
+                <div class="card h-100 shadow-sm border-0 text-center p-3">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">@item.Title</h5>
+                        <p class="card-text text-muted">A set of 10 questions to test your knowledge.</p>
+
+                        @* DÜZELTME: @item.QuizId yerine @item.Id yazıyoruz *@
+                        <a asp-controller="Quiz" asp-action="Play" asp-route-id="@item.Id"
+                               class="btn btn-primary btn-lg w-100 shadow-sm mt-3">
+                            <i class="bi bi-play-fill"></i> Start Quiz
+                        </a>
+                        <a asp-controller="Lobby" asp-action="Create" asp-route-quizId="@item.Id"
+                           class="btn btn-success btn-lg w-100 shadow-sm mt-2">
+                            <i class="bi bi-broadcast-pin"></i> Open Room
+                        </a>
+                    </div>
+
+                    <div class="card-footer bg-transparent border-0 d-flex justify-content-around">
+                        
+                        <a asp-action="QuestionsList" asp-route-quizId="@item.Id" class="btn btn-outline-info">Manage Questions</a>
+                        
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

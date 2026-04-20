@@ -1,0 +1,46 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Add New Question</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="AddQuestion" method="post">
+                <input type="hidden" name="quizId" value="@ViewBag.QuizId" />
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2">Question Text</label>
+                    <input type="text" name="questionText" class="form-control form-control-lg" placeholder="Type your question here..." required />
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2">Question Image URL (Optional)</label>
+                    <input type="url" name="questionImageUrl" class="form-control form-control-lg" placeholder="https://..." />
+                    <small class="text-muted">Futbolcu sorularinda oyuncu fotografini buraya koyabilirsin.</small>
+                </div>
+
+                <label class="fw-bold mb-2">Options (Mark the correct one)</label>
+                
+                @for (int i = 0; i < 4; i++)
+                {
+                    <div class="input-group mb-3 p-2 border rounded border-light bg-light">
+                        <div class="input-group-text bg-white border-0">
+                            <input class="form-check-input mt-0" type="radio" name="correctAnswerIndex" value="@i" required>
+                        </div>
+                        <input type="text" name="options" class="form-control border-0 bg-transparent" placeholder="Option @(i + 1)" required>
+                    </div>
+                }
+
+                <div class="d-flex justify-content-between mt-4">
+                    <p class="text-danger fw-bold">Time Limit: 30 seconds (Default)</p>
+                    <button type="submit" class="btn btn-success btn-lg px-5">Save Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="mt-3 text-center">
+    <a asp-action="Index" class="btn btn-outline-secondary">Finish and Go to Homepage</a>
+</div>

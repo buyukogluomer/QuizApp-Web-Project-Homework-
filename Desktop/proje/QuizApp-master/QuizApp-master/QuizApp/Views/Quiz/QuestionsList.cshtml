@@ -1,0 +1,45 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model IEnumerable<QuizApp.Models.Questions>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Questions for this Quiz</h2>
+        
+    </div>
+
+    <div class="list-group shadow-sm">
+        @foreach (var item in Model)
+        {
+            var previewUrl = item.ImageUrl;
+
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3">
+                <div>
+                    <h5 class="mb-1 text-primary">@item.Text</h5>
+                    @if (!string.IsNullOrWhiteSpace(previewUrl))
+                    {
+                        <div class="my-2">
+                            <img src="@previewUrl" alt="Question image" class="rounded-3 border" style="width: 96px; height: 96px; object-fit: cover;" />
+                        </div>
+                    }
+                    <small class="text-muted">Total Options: @item.Answers.Count()</small>
+                </div>
+                <div>
+                    <a asp-action="Edit" asp-route-id="@item.QuestionId" class="btn btn-warning btn-sm me-2">Edit</a>
+                    
+                    <form asp-action="DeleteQuestion" asp-route-id="@item.QuestionId" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Bu soruyu ve tüm şıklarını silmek istediğinize emin misiniz?')">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="mt-4 text-center">
+        <a asp-action="Index" class="btn btn-secondary">Back to Quizzes</a>
+    </div>
+</div>

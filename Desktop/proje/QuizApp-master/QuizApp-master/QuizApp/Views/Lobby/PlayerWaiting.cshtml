@@ -1,0 +1,119 @@
+@model PlayerWaitingViewModel
+
+@{
+    ViewData["Title"] = "Player Waiting";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5 text-center">
+                    <div class="text-uppercase text-muted fw-semibold mb-2">Oyuncu Bekleme Ekrani</div>
+                    <h1 class="display-6 fw-bold text-primary">@Model.QuizTitle</h1>
+                    <p class="lead mb-4">
+                        <strong>@Model.PlayerName</strong>, lobiye baglandin. Host oyunu baslatinca otomatik olarak quize gececeksin.
+                    </p>
+
+                    <div class="rounded-4 bg-light p-4 mb-4">
+                        <div class="text-muted">Oda PIN</div>
+                        <div class="display-4 fw-bolder" style="letter-spacing: 12px;">@Model.PinCode</div>
+                    </div>
+
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <div id="statusText" class="fw-semibold">Host bekleniyor...</div>
+
+                    <div class="mt-5 text-start">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <div>
+                                <div class="fw-bold">Lobi Liderlik Siralamasi</div>
+                                <div class="text-muted small">Bu PIN ile giren oyuncularin guncel puani.</div>
+                            </div>
+                            <span class="badge bg-primary">PIN: @Model.PinCode</span>
+                        </div>
+
+                        <div id="rankingList" class="list-group">
+                            @foreach (var entry in Model.Rankings)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center @(entry.IsCurrentPlayer ? "active" : "")">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="badge @(entry.Rank == 1 ? "bg-warning text-dark" : entry.Rank == 2 ? "bg-secondary" : "bg-dark")">@entry.Rank.</span>
+                                        <span class="fw-bold">@entry.PlayerName</span>
+                                    </div>
+                                    <span class="fw-semibold">@entry.Score puan</span>
+                                </div>
+                            }
+                        </div>
+                        <p id="rankingEmptyState" class="text-muted mt-3 @(Model.Rankings.Count == 0 ? "" : "d-none")">Henuz puanlanan oyuncu yok.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+    <script>
+        const pinCode = "@Model.PinCode";
+        const playerName = "@Model.PlayerName";
+        const fallbackQuizId = @Model.QuizId;
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/quizHub")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("QuizStarted", function (quizId, startedPin) {
+            if (startedPin === pinCode) {
+                window.location.href = `/Quiz/Play/${quizId}?pin=${encodeURIComponent(pinCode)}&playerName=${encodeURIComponent(playerName)}`;
+            }
+        });
+
+        connection.on("LobbyStateChanged", function (state) {
+            if (state.pin === pinCode && state.isStarted) {
+                window.location.href = `/Quiz/Play/${state.quizId ?? fallbackQuizId}?pin=${encodeURIComponent(pinCode)}&playerName=${encodeURIComponent(playerName)}`;
+                return;
+            }
+
+            if (state.pin !== pinCode) {
+                return;
+            }
+
+            renderRankings(state.rankings ?? []);
+        });
+
+        function renderRankings(rankings) {
+            const rankingList = document.getElementById("rankingList");
+            const rankingEmptyState = document.getElementById("rankingEmptyState");
+
+            rankingList.innerHTML = "";
+            rankingEmptyState.classList.toggle("d-none", rankings.length > 0);
+
+            rankings.forEach(entry => {
+                const item = document.createElement("div");
+                const isCurrentPlayer = entry.playerName?.toLowerCase() === playerName.toLowerCase();
+                const badgeClass = entry.rank === 1
+                    ? "bg-warning text-dark"
+                    : entry.rank === 2
+                        ? "bg-secondary"
+                        : "bg-dark";
+
+                item.className = `list-group-item d-flex justify-content-between align-items-center ${isCurrentPlayer ? "active" : ""}`;
+                item.innerHTML = `
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge ${badgeClass}">${entry.rank}.</span>
+                        <span class="fw-bold">${entry.playerName}</span>
+                    </div>
+                    <span class="fw-semibold">${entry.score} puan</span>`;
+
+                rankingList.appendChild(item);
+            });
+        }
+
+        connection.start()
+            .then(() => connection.invoke("JoinLobby", pinCode, playerName, false))
+            .catch(error => {
+                document.getElementById("statusText").innerText = error.toString().replace("Error: ", "");
+            });
+    </script>
+}

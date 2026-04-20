@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Home Page";
+    var username = HttpContextAccessor.HttpContext.Session.GetString("Username");
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+        <div class="col-md-8 text-center">
+
+            @if (username != null)
+            {
+                @* GİRİŞ YAPMIŞ KULLANICI EKRANI *@
+                <div class="card-header bg-transparent border-0 text-center">
+                    <img src="~/images/logo-ver2.svg" style="height: 60px;" alt="Logo" />
+                   
+                </div>
+                    <h1 class="display-4 fw-bold text-success mb-3">Hello, @username!</h1>
+                    <p class="lead text-muted mb-4">You are successfully logged in. Ready to prove your skills?</p>
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                        <a asp-controller="Quiz" asp-action="Index" class="btn btn-primary btn-lg px-5 shadow">
+                            <i class="bi bi-play-fill"></i> Start New Quiz
+                        </a>
+                        <a asp-controller="Lobby" asp-action="Join" class="btn btn-outline-success btn-lg px-5 shadow">
+                            <i class="bi bi-people-fill"></i> Join With PIN
+                        </a>
+                    </div>
+                
+            }
+            else
+            {
+                @* GİRİŞ YAPMAMIŞ KULLANICI EKRANI *@
+                <div class="card-header bg-transparent border-0 text-center">
+                    <img src="~/images/logo-ver2.svg" style="height: 60px;" alt="Logo" />
+                   
+                </div>
+                <h1 class="display-5 fw-bold text-primary mb-4">Bilgini goster, hizini konuştur.</h1>
+                <p class="lead mb-5 text-muted">The best platform to challenge your knowledge. Please login to start the journey.</p>
+
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-success btn-lg px-4 shadow">
+                        Login Now
+                    </a>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-lg px-4 shadow">
+                        Create Account
+                    </a>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
